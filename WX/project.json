@@ -1,0 +1,10 @@
+{
+    "name": "WX端",
+    "main": "ui.js",
+    "ignore": [
+        "build"
+    ],
+    "packageName": "com.wxduan.tool",
+    "versionName": "1.0.0",
+    "versionCode": 1
+}

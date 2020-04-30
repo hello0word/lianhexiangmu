@@ -1,0 +1,10 @@
+{
+    "name": "ZFB端",
+    "main": "ui.js",
+    "ignore": [
+        "build"
+    ],
+    "packageName": "com.zfuclient.tool",
+    "versionName": "1.0.0",
+    "versionCode": 1
+}
