@@ -748,6 +748,7 @@ function 自管理数据管理器() {
                 }
                 if (匹配成功) {
                     匹配位置 = array.length - 已记录列表指针位置 - 1
+                    break
                 }
             }
         }
@@ -1118,9 +1119,11 @@ function 使用微信发送() {
 
 function 返回到朋友页(){
     for (let index = 0; index < 3; index++) {
-        let 返回 = desc("返回").clickable().findOne()
-        返回.click()
-        sleep(150)
+        let 返回 = desc("返回").clickable().findOne(250)
+        if(返回){
+            返回.click()
+            sleep(150)
+        } 
     }
 }
 
@@ -1146,10 +1149,10 @@ function 发送后处理(){
         return 
     }
 
-    let 查看转账记录 =  text("查看转账记录").findOne(1000)
+    let 查看转账记录 =  desc("查看转账记录").findOne(1000)
     if (查看转账记录) {
         log("有查看转账记录")
-        查看转账记录.parent().parent().parent().parent().click()
+        查看转账记录.click()
     }else{
         log("无查看转账记录")
         toastLog('处理错误,请手动回到朋友页面')
@@ -1173,8 +1176,8 @@ function 发送后处理(){
 }
 
 function 一键纠错(){
-    desc("聊天设置").findOne().click()
-    text("查看转账记录").findOne().parent().parent().parent().parent().click()
+    // desc("聊天设置").findOne().click()
+    desc("查看转账记录").findOne().click()
     id("bill_object_listView").waitFor()
     if (text("近期无记录").findOne(300)) {
         log("近期无记录")
@@ -1402,7 +1405,7 @@ function 查找订单号等数据() {
     let 筛选数组 = 订单详情.收款理由.split("")
     if (筛选数组.distinct().length < 订单详情.收款理由.length) {
         log("有重复的")
-        return "无效数据"
+        return "无效收款"
     }
 
 
@@ -1427,7 +1430,7 @@ function 查找订单号等数据() {
                 log("未匹配到")
             }
         } else {
-            log("未知字符串")
+            log("不是龙虎合")
         }
         if (出现次数 == 1) {
             倍数 = 1
@@ -1488,7 +1491,7 @@ function 查找订单号等数据() {
         toastLog("该订单已被记录")
     }
 
-    if (订单详情.收款理由 == "个人收款") {
+    if (! /^([0-9]{1,5}|龙|虎|合)$/.test( 订单详情.收款理由)) {
         toastLog("无效收款")
         return "无效收款"
     }
@@ -1703,21 +1706,25 @@ function 收款特征(备注, 金额) {
 
     }
 function 获取收款列表() {
-    
+    function 统计当前页面表头数(){
+        let count=0
+        let 列表对象 = id("bill_object_listView").findOne()
+        count += 列表对象.find(className("android.widget.RelativeLayout").depth(列表对象.depth() + 1)).length
+        return count
+    }
     var 所有列表 = []
     var 查找时间 = 20
     var 没有计数 = 0
-    var table_head_count = 1
+    var table_head_count = 0
+    table_head_count += 统计当前页面表头数()
     for (let index = 1; index < 100; index++) {
         // const element = array[index];
         let 目标特征 = className("android.widget.LinearLayout").row(index)
         if (!目标特征.findOne(查找时间)) {
             // swipe(device.width / 2, device.height * 0.7, device.width / 2, device.height * 0.3, 80)
-            let 列表对象 = id("bill_object_listView").findOne()
-            var table_head_count = 0
-            table_head_count += 列表对象.find(className("android.widget.RelativeLayout").depth(列表对象.depth() + 1)).length
+            
             let list = className("android.widget.ListView").findOne().scrollDown()
-
+            table_head_count += 统计当前页面表头数()
             // sleep(100)
             if (!目标特征.findOne(查找时间)) {
                 log(index + "没有")
@@ -1768,6 +1775,7 @@ function 获取收款列表() {
 //因为row==0 的是表头
 function 点击列表项目(项目row) {
     log(arguments.callee.name)
+    log("点击序号:"+项目row)
     var 查找时间 = 20
     for (let index = 1; index < 100; index++) {
         // const element = array[index];
@@ -1864,14 +1872,15 @@ function 昵称变动处理(进入来往记录) {
         }
         if (全自动开启 && 进入来往记录) {
             //进入设置
-            desc("聊天设置").findOne().click()
-            text("查看转账记录").findOne().parent().parent().parent().parent().click()
+            // desc("聊天设置").findOne().click()
+            desc("查看转账记录").findOne().click()
             let 顺序位置 = 获取当前列表并比对()
             log("顺序位置:" + JSON.stringify(顺序位置))
             if (顺序位置 && 点击列表项目(顺序位置.顺序位置 + 顺序位置.月份表头个数)) {
                 log("点击成功")
             } else {
                 log("顺序位置错误")
+                返回到朋友页()
             }
         }
         function 旧的() {
@@ -1952,6 +1961,7 @@ function main() {
                 back()
                 // threads.start(function () {
                 发送("备注错误无效", true)
+                返回到朋友页()
             } else {
                 sleep(400)
                 back()
