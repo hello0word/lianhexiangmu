@@ -123,6 +123,18 @@ function 自管理数据管理器() {
 
         return 匹配位置
     }
+    this.获取用户列表 = function (用户名){
+        let 所有用户的已点击消息 = storage.get("所有用户的已点击消息", new Object())
+
+        return 所有用户的已点击消息[用户名]
+    }
+    this.用户列表位置交换= function(用户名,x1,x2){
+        let 所有用户的已点击消息 = storage.get("所有用户的已点击消息", new Object())
+        let bak = 所有用户的已点击消息[用户名][x1]
+        所有用户的已点击消息[用户名][x1] = 所有用户的已点击消息[用户名][x2]
+        所有用户的已点击消息[用户名][x2] = bak
+        storage.put("所有用户的已点击消息", 所有用户的已点击消息)
+    }
 
 }
 var 全部自管理数据 = new 自管理数据管理器()
@@ -132,7 +144,11 @@ var 全部自管理数据 = new 自管理数据管理器()
 // setInterval(()=>{
 //     log(消息列表.child(2).bounds())
 // },400)
-// log(全部自管理数据.获取用户最后点击的订单金额和备注("server_10087"))
+let ls=全部自管理数据.获取用户列表("server_10087")
+log(ls)
+全部自管理数据.用户列表位置交换("server_10087",ls.length - 1,ls.length -3)
+ls = 全部自管理数据.获取用户列表("server_10087")
+log(ls)
 function 获取收款列表() {
     function 收款特征(备注, 金额, 时间) {
         this.原始备注 = 备注
@@ -217,4 +233,5 @@ function 获取收款列表() {
 //     back()
 //     log(计数器)
 // }
+
 

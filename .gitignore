@@ -6,3 +6,4 @@ test.js
 *.apk
 node_modules
 code/抖音外挂/XposedBridge.jar
+/ZFB/test2.js

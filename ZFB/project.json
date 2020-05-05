@@ -1,10 +1,22 @@
 {
-    "name": "ZFB端",
+    "name": "ZFB端2",
     "main": "ui.js",
+    "encryptLevel": 1,
+    "useFeatures": [],
+    "launchConfig": {
+        "displaySplash": true,
+        "hideLogs": false,
+        "splashText": "Powered by Auto.js Pro",
+        "stableMode": false
+    },
+    "optimization": {
+        "removeOpenCv": true,
+        "unusedResources": true
+    },
     "ignore": [
         "build"
     ],
-    "packageName": "com.zfuclient.tool",
-    "versionName": "1.0.0",
-    "versionCode": 1
+    "packageName": "com.zfuclient.tools",
+    "versionName": "1.7.1",
+    "versionCode": 171
 }
