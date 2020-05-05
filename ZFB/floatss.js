@@ -1398,13 +1398,21 @@ function loop_serch() {
 function 查找订单号等数据() {
 
     let 订单详情 = loop_serch()
-
+    if (! /^([0-9]{1,5}|龙|虎|合)$/.test(订单详情.收款理由)) {
+        toastLog("无效收款")
+        return "无效收款"
+    }
     //将订单详情发送到服务器
     G_订单详情 = 订单详情
     if (parseInt(订单详情.收款金额) > G_当前余额) {
         return "超额无效，请补充余额"
     }
-
+    //排除掉重复的字符串
+    let 筛选数组 = 订单详情.收款理由.split("")
+    if (筛选数组.distinct().length < 订单详情.收款理由.length) {
+        log("有重复的")
+        return "无效收款"
+    }
     // log(订单详情)
 
     let last_5_arr = 订单详情.订单号后5位.split("")
@@ -1449,12 +1457,7 @@ function 查找订单号等数据() {
 
     }
 
-    //排除掉重复的字符串
-    let 筛选数组 = 订单详情.收款理由.split("")
-    if (筛选数组.distinct().length < 订单详情.收款理由.length) {
-        log("有重复的")
-        return "无效收款"
-    }
+    
 
 
     let 出现次数 = 次数查找(订单详情.订单号后5位, 订单详情.收款理由)
@@ -1539,10 +1542,7 @@ function 查找订单号等数据() {
         toastLog("该订单已被记录")
     }
 
-    if (! /^([0-9]{1,5}|龙|虎|合)$/.test(订单详情.收款理由)) {
-        toastLog("无效收款")
-        return "无效收款"
-    }
+    
 
 
     let 最终字符串 = storage.get("固定文字", "")
