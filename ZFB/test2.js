@@ -302,4 +302,5 @@ let 聊天页面金额和备注的列表 = [{ '备注': '7', '金额': 50 },
 
 
 let ff = /^([0-9]{1,5}|龙|虎|合)$/
-log(ff.test("龙,"))
+log(ff.test("."))
+log(app.versionName)
