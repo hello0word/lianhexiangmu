@@ -8,7 +8,7 @@ const 虎标记 = "🐯"
 const 合标记 = "🈴"
 const 输入框默认消息 = "这里可以编辑"
 var WX端编号 = storage.get("WX端编号", "")
-var 聊天页黑名单 = ["天天领守护金","招商银行信用卡","蚂蚁财富", "天天领心愿卡", "服务提醒", "天天领守护金", "飞猪旅行", "支付宝账户安全险", "我的小程序", "守护宝", "蚂蚁森林", "好医保", "饿了么", "支付宝商家服务", "社区生活", "蚂蚁庄园", "支付宝市民中心", "借呗", "全民保", "达人消息", "芝麻信用"]
+var 聊天页黑名单 = ["天天领守护金", "招商银行信用卡", "蚂蚁财富", "天天领心愿卡", "服务提醒", "天天领守护金", "飞猪旅行", "支付宝账户安全险", "我的小程序", "守护宝", "蚂蚁森林", "好医保", "饿了么", "支付宝商家服务", "社区生活", "蚂蚁庄园", "支付宝市民中心", "借呗", "全民保", "达人消息", "芝麻信用"]
 
 Array.prototype.distinct = function () {
     var arr = this,
@@ -150,7 +150,9 @@ window2.纠错按钮.setOnTouchListener(function (view, event) {
         case event.ACTION_UP:
             //手指弹起时如果偏移很小则判断为点击
             if (Math.abs(event.getRawY() - y) < 5 && Math.abs(event.getRawX() - x) < 5) {
-                threads.start(一键纠错)
+                main_threads.setTimeout(() => {
+                    一键纠错()
+                }, 10)
             }
             return true;
     }
@@ -678,7 +680,39 @@ function 全部数据管理器() {
         storage.put("所有信息", this.所有数据)
     }
 }
+function isObjectValueEqual(a, b) {
 
+    //取对象a和b的属性名
+
+    var aProps = Object.getOwnPropertyNames(a);
+
+    var bProps = Object.getOwnPropertyNames(b);
+
+    //判断属性名的length是否一致
+
+    if (aProps.length != bProps.length) {
+
+        return false;
+
+    }
+
+    //循环取出属性名，再判断属性值是否一致
+
+    for (var i = 0; i < aProps.length; i++) {
+
+        var propName = aProps[i];
+
+        if (a[propName] != b[propName]) {
+
+            return false;
+
+        }
+
+    }
+
+    return true;
+
+}
 //将这个订单解析为包含金额和备注的信息存储到不可删除自管理长度的对象内部去
 function 自管理数据管理器() {
     /**
@@ -735,6 +769,23 @@ function 自管理数据管理器() {
         log("传入的列表:")
         log(聊天页面金额和备注的列表)
         var 匹配位置 = -1
+        for (a_pianyi = array.length - 聊天页面金额和备注的列表.length; a_pianyi < array.length; a_pianyi++) {
+            let ok = true
+            let b_pianyi = 0
+            for (; b_pianyi < 聊天页面金额和备注的列表.length && a_pianyi + b_pianyi < array.length; b_pianyi++) {
+                if (! isObjectValueEqual(array[a_pianyi + b_pianyi], 聊天页面金额和备注的列表[b_pianyi])) {
+                    ok = false
+                    break
+                }
+            }
+            if (ok) {
+                log("array偏移:" + a_pianyi)
+                log("聊天页面金额和备注的列表偏移:" + (b_pianyi - 1))
+                匹配位置 = b_pianyi - 1
+                break
+            }
+        }
+        /*
         for (let 已记录列表指针位置 = array.length - 1; 已记录列表指针位置 >= 0; 已记录列表指针位置--) {
             let element = array[已记录列表指针位置];
             if (聊天页面金额和备注的列表[0].金额 == element.金额 && 聊天页面金额和备注的列表[0].备注 == element.备注) {
@@ -752,7 +803,7 @@ function 自管理数据管理器() {
                 }
             }
         }
-
+        */
         return 匹配位置
     }
     this.清除指定用户数据 = function (用户名) {
@@ -932,8 +983,7 @@ function 发送(str, 是否发送) {
     //需要立即发送的则不显示到悬浮窗
     if (是否发送) {
         立即发送(str)
-        // threads.start(发送后处理) 
-        // 使用微信发送()
+        
     } else {
         显示消息到悬浮窗(str)
     }
@@ -978,9 +1028,9 @@ function 设置余额() {
                 window.当前用户.setText("昵称:" + G_当前用户)
             })
             let str = "￥" + G_当前余额
-            // threads.start(function () {
+            
             发送(str, true)
-            // })
+            
         } else {
             toast("取消")
         }
@@ -996,9 +1046,9 @@ function 加余额() {
             全部数据.加余额(parseInt(value))
 
             let str = "￥" + (G_当前余额)
-            // threads.start(function () {
+            
             发送(str, true)
-            // })
+            
         } else {
             toast("取消")
         }
@@ -1016,9 +1066,9 @@ function 减余额() {
             }
             全部数据.减余额(parseInt(value))
             let str = "￥" + (G_当前余额)
-            // threads.start(function () {
+            
             发送(str, true)
-            // })
+            
         } else {
             toast("取消")
         }
@@ -1063,15 +1113,17 @@ function 使用微信发送() {
         return
     }
     if (全自动开启) {
-        threads.start(发送后处理) 
+        main_threads.setTimeout(() => {
+            发送后处理()
+        }, 10 )
     }
     解析信息(str)
     立即发送(str)
-    
+
     ui.run(() => {
         window2.走势按钮.attr("bg", "#00FF00")
     })
-    
+
     // lock.unlock()
     function 解析信息(信息) {
         let 余额开始位置 = 信息.indexOf("￥")
@@ -1117,70 +1169,66 @@ function 使用微信发送() {
     }
 }
 
-function 返回到朋友页(){
+function 返回到朋友页() {
     for (let index = 0; index < 3; index++) {
         let 返回 = desc("返回").clickable().findOne(250)
-        if(返回){
+        if (返回) {
             返回.click()
             sleep(150)
-        } 
+        }
     }
 }
 
-function 发送后处理(){
+function 发送后处理() {
     log(arguments.callee.name)
     // let 返回 = desc("返回").clickable().findOne()
     // 返回.click()
 
     sleep(200)
 
-    let bs=desc("返回").findOne(200)
+    let bs = desc("返回").findOne(200)
     if (bs) {
         log("有返回")
-        bs.click()  
+        bs.click()
         sleep(50)
-    }else{
-        log("无返回按钮")
-        back()
-    } 
+    }
     //判断是否回到了朋友页面
-    if(text("朋友").packageName("com.eg.android.AlipayGphone").findOne(200)){
+    if (text("朋友").packageName("com.eg.android.AlipayGphone").findOne(200)) {
         log("已回到朋友页面")
-        return 
+        return
     }
 
-    let 查看转账记录 =  desc("查看转账记录").findOne(1000)
+    let 查看转账记录 = desc("查看转账记录").findOne(1000)
     if (查看转账记录) {
         log("有查看转账记录")
         查看转账记录.click()
-    }else{
+    } else {
         log("无查看转账记录")
         toastLog('处理错误,请手动回到朋友页面')
         return false
     }
-    let 顺序位置 =  获取当前列表并比对()
+    let 顺序位置 = 获取当前列表并比对()
     if (顺序位置) {
         log('比对成功')
         log(顺序位置.列表)
         //分割列表 
-        let array = 顺序位置.列表.slice(顺序位置.pipei+1)
+        let array = 顺序位置.列表.slice(顺序位置.pipei + 1)
         log(array)
         for (let index = 0; index < array.length; index++) {
             let element = array[index];
-            全部自管理数据.添加用户点击的订单金额和备注(G_当前用户,element.金额,element.备注)
+            全部自管理数据.添加用户点击的订单金额和备注(G_当前用户, element.金额, element.备注)
         }
-    }else{
+    } else {
         log("顺序位置.顺序位置2错误")
     }
     返回到朋友页()
 }
 
-function 一键纠错(){
-    // desc("聊天设置").findOne().click()
+function 一键纠错() {
     desc("查看转账记录").findOne().click()
     id("bill_object_listView").waitFor()
     if (text("近期无记录").findOne(300)) {
-        log("近期无记录")
+        toastLog("近期无记录")
         return false
     }
     className("android.widget.LinearLayout").row(1).waitFor()
@@ -1205,10 +1253,10 @@ function 解析符合条件的子元素(聊天列表根元素) {
         let element = 所有子元素[index];
         // log(element.className())
         let element_bak = element
-        if (element.childCount() == 1) {
+        if (element && element.childCount() == 1) {
             element = element.child(0)
             // log(element.childCount())
-            if (element &&  element.childCount() == 3 && element.child(0).className() == "android.widget.FrameLayout" && element.child(1).className() == "android.widget.RelativeLayout" && element.child(2).className() == "android.widget.LinearLayout") {
+            if (element && element.childCount() == 3 && element.child(0).className() == "android.widget.FrameLayout" && element.child(1).className() == "android.widget.RelativeLayout" && element.child(2).className() == "android.widget.LinearLayout") {
                 let 标题名字 = element.findOne(id("item_name"))
                 if (标题名字) {
                     标题名字 = 标题名字.text()
@@ -1491,7 +1539,7 @@ function 查找订单号等数据() {
         toastLog("该订单已被记录")
     }
 
-    if (! /^([0-9]{1,5}|龙|虎|合)$/.test( 订单详情.收款理由)) {
+    if (! /^([0-9]{1,5}|龙|虎|合)$/.test(订单详情.收款理由)) {
         toastLog("无效收款")
         return "无效收款"
     }
@@ -1562,9 +1610,9 @@ function 组合流水() {
 function 发送流水() {
     log(arguments.callee.name)
     let str = 组合流水()
-    // threads.start(function () {
+    
     发送(str)
-    // })
+    
 }
 
 function 获取余额() {
@@ -1688,26 +1736,26 @@ function 聊天内部页面处理(初次) {
 
 }
 function 收款特征(备注, 金额) {
-        this.原始备注 = 备注
-        this.原始金额 = 金额
-        this.返回对象 = {}
+    this.原始备注 = 备注
+    this.原始金额 = 金额
+    this.返回对象 = {}
 
-        this.解析备注 = function () {
-            this.返回对象.备注 = this.原始备注.split("-")[0]
-        }
-        this.解析金额 = function () {
-            this.返回对象.金额 = Math.abs(parseInt(this.原始金额))
-        }
-        this.解析备注()
-        // this.解析时间()
-        this.解析金额()
-        return this.返回对象
-
-
+    this.解析备注 = function () {
+        this.返回对象.备注 = this.原始备注.split("-")[0]
     }
+    this.解析金额 = function () {
+        this.返回对象.金额 = Math.abs(parseInt(this.原始金额))
+    }
+    this.解析备注()
+    // this.解析时间()
+    this.解析金额()
+    return this.返回对象
+
+
+}
 function 获取收款列表() {
-    function 统计当前页面表头数(){
-        let count=0
+    function 统计当前页面表头数() {
+        let count = 0
         let 列表对象 = id("bill_object_listView").findOne()
         count += 列表对象.find(className("android.widget.RelativeLayout").depth(列表对象.depth() + 1)).length
         return count
@@ -1722,7 +1770,7 @@ function 获取收款列表() {
         let 目标特征 = className("android.widget.LinearLayout").row(index)
         if (!目标特征.findOne(查找时间)) {
             // swipe(device.width / 2, device.height * 0.7, device.width / 2, device.height * 0.3, 80)
-            
+
             let list = className("android.widget.ListView").findOne().scrollDown()
             table_head_count += 统计当前页面表头数()
             // sleep(100)
@@ -1759,23 +1807,23 @@ function 获取收款列表() {
             if (所有列表.length > 6 && JSON.stringify(所有列表[所有列表.length - 1]) != JSON.stringify(所有列表[所有列表.length - 2])) {
                 return {
                     所有列表: 所有列表,
-                    table_head_count : table_head_count
+                    table_head_count: table_head_count
                 }
             }
 
         }
 
     }
-        return {
-            所有列表: 所有列表,
-            table_head_count: table_head_count
-        }
+    return {
+        所有列表: 所有列表,
+        table_head_count: table_head_count
+    }
     // log(className("android.widget.LinearLayout").row(1).findOne())
 }
 //因为row==0 的是表头
 function 点击列表项目(项目row) {
     log(arguments.callee.name)
-    log("点击序号:"+项目row)
+    log("点击序号:" + 项目row)
     var 查找时间 = 20
     for (let index = 1; index < 100; index++) {
         // const element = array[index];
@@ -1801,7 +1849,7 @@ function 点击列表项目(项目row) {
             let 目标 = 目标特征.findOne()
             let 备注 = 目标.child(0).child(0).text()
             let 金额 = 目标.child(0).child(1).text()
-            let sk= new 收款特征(备注,金额)
+            let sk = new 收款特征(备注, 金额)
             全部自管理数据.添加用户点击的订单金额和备注(G_当前用户, sk.金额, sk.备注)
             目标.click()
             return true
@@ -1811,7 +1859,7 @@ function 点击列表项目(项目row) {
     return false
 }
 
-function 获取当前列表并比对(){
+function 获取当前列表并比对() {
     id("bill_object_listView").waitFor()
     if (text("近期无记录").findOne(300)) {
         log("近期无记录")
@@ -1837,13 +1885,13 @@ function 获取当前列表并比对(){
         顺序位置 = liebiao.length - 1
     }
     log("顺序位置:" + 顺序位置)
-    
+
 
     if (顺序位置 > -1) {
         return {
-            列表:liebiao,
-            顺序位置:顺序位置,
-            pipei:pipei,
+            列表: liebiao,
+            顺序位置: 顺序位置,
+            pipei: pipei,
             月份表头个数: returninfo.table_head_count
         }
     } else {
@@ -1942,10 +1990,11 @@ var 全部流水 = new 所有流水()
 var 全部自管理数据 = new 自管理数据管理器()
 var 全自动开启 = true
 var 消息发送完成 = true
-var lock = threads.lock();
+
 var 最后一次点击的信息 = "没有记录"
 var 确认消息发送了 = false
 var 用户切换成功 = false
+var main_threads = threads.currentThread()
 function main() {
     function 账单页处理() {
         let 账单详情 = text("账单详情").packageName("com.eg.android.AlipayGphone").findOne(1)
@@ -1959,15 +2008,15 @@ function main() {
             } else if (str == "无效收款") {
                 // sleep(400)
                 back()
-                // threads.start(function () {
+                
                 发送("备注错误无效", true)
                 返回到朋友页()
             } else {
                 sleep(400)
                 back()
-                // threads.start(function () {
+                
                 发送(str)
-                // })
+                
             }
         }
     }
@@ -2005,6 +2054,9 @@ function main() {
 function test() {
     toast("这是测试消息")
     // 全部自管理数据.清除指定用户数据("server_10087")
+    let main_threads = threads.currentThread()
+    log(main_threads)
+    // main_threads.interrupt()
     // 发送后处理()
 }
 // test()

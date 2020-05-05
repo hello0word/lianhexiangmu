@@ -128,12 +128,12 @@ function 自管理数据管理器() {
 
         return 匹配位置
     }
-    this.获取用户列表 = function (用户名){
+    this.获取用户列表 = function (用户名) {
         let 所有用户的已点击消息 = storage.get("所有用户的已点击消息", new Object())
 
         return 所有用户的已点击消息[用户名]
     }
-    this.用户列表位置交换= function(用户名,x1,x2){
+    this.用户列表位置交换 = function (用户名, x1, x2) {
         let 所有用户的已点击消息 = storage.get("所有用户的已点击消息", new Object())
         let bak = 所有用户的已点击消息[用户名][x1]
         所有用户的已点击消息[用户名][x1] = 所有用户的已点击消息[用户名][x2]
@@ -301,6 +301,60 @@ let 聊天页面金额和备注的列表 = [{ '备注': '7', '金额': 50 },
 // log(匹配位置)
 
 
-let ff = /^([0-9]{1,5}|龙|虎|合)$/
-log(ff.test("."))
-log(app.versionName)
+// let ff = /^([0-9]{1,5}|龙|虎|合)$/
+// log(ff.test("."))
+// log(app.versionName)
+
+// a_p = a.length - b.length
+function isObjectValueEqual(a, b) {
+
+    //取对象a和b的属性名
+
+    var aProps = Object.getOwnPropertyNames(a);
+
+    var bProps = Object.getOwnPropertyNames(b);
+
+    //判断属性名的length是否一致
+
+    if (aProps.length != bProps.length) {
+
+        return false;
+
+    }
+
+    //循环取出属性名，再判断属性值是否一致
+
+    for (var i = 0; i < aProps.length; i++) {
+
+        var propName = aProps[i];
+
+        if (a[propName] != b[propName]) {
+
+            return false;
+
+        }
+
+    }
+
+    return true;
+
+}
+// b_p = 0
+for (a_pianyi = array.length - 聊天页面金额和备注的列表.length; a_pianyi < array.length; a_pianyi++) {
+    let ok = true
+    let b_pianyi = 0
+    for (; b_pianyi < 聊天页面金额和备注的列表.length && a_pianyi + b_pianyi < array.length; b_pianyi++) {
+        if (!isObjectValueEqual(array[a_pianyi + b_pianyi], 聊天页面金额和备注的列表[b_pianyi])) {
+            ok = false
+            break
+        }
+    }
+    if (ok) {
+        log( "a偏移:" + a_pianyi)
+        log( "b偏移:" + (b_pianyi-1 ))
+        break
+    }
+}
+
+
+
