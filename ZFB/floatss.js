@@ -1765,7 +1765,7 @@ function 获取收款列表() {
     var 没有计数 = 0
     var table_head_count = 0
     table_head_count += 统计当前页面表头数()
-    for (let index = 1; index < 100; index++) {
+    for (let index = 0; index < 100; index++) {
         // const element = array[index];
         let 目标特征 = className("android.widget.LinearLayout").row(index)
         if (!目标特征.findOne(查找时间)) {
